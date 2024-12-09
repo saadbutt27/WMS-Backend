@@ -1,4 +1,5 @@
-const { signup, login } = require('../services/userService');
+// controllers/userController.js
+const { signup, login, getAllUsers } = require('../services/userService');
 
 const signupUser = async (req, res) => {
   try {
@@ -19,4 +20,14 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { signupUser, loginUser };
+// Renaming this function to avoid conflict
+const getUsers = async (req, res) => {
+  try {
+    const users = await getAllUsers();
+    res.status(200).json({ users });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { signupUser, loginUser, getUsers };

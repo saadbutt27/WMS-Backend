@@ -20,4 +20,10 @@ const login = async (email, password) => {
   return { token, user };
 };
 
-module.exports = { signup, login };
+
+const getAllUsers = async () => {
+  const users = await User.findAll();  // Assuming you're using Sequelize ORM
+  return users;
+};
+
+module.exports = { signup, login, getAllUsers };
