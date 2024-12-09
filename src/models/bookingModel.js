@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database'); // Import the sequelize instance
 
-const Booking = sequelize.define("Booking", {
+const Booking = sequelize.define("bookings", {
   order_ID: {
     type: DataTypes.STRING,
     allowNull: false, // Ensure it's required
