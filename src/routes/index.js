@@ -11,6 +11,7 @@ const waterTankStatusRoutes = require("./watertankStatusRoutes");
 const driverRoutes = require("./driverRoutes");
 const notificationRoutes = require("./notificationRoutes");
 const customerNotificationRoutes = require("./customerNotificationRoutes");
+const complainRoutes = require("./complainRoutes");
 
 const router = express.Router();
 
@@ -27,5 +28,6 @@ router.use("/tankStatus", waterTankStatusRoutes);
 router.use("/driver", driverRoutes);
 router.use("/notification", notificationRoutes);
 router.use("/customerNotification", customerNotificationRoutes);
+router.use("/complain", complainRoutes);
 
 module.exports = router;

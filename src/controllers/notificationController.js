@@ -1,5 +1,6 @@
 const Notification = require("../models_v2/notificationsModel");
 const Admin = require("../models_v2/adminModel");
+const Customer = require("../models_v2/customerModel");
 const CustomerNotification = require("../models_v2/customerNotificationsModel");
 const { sequelize } = require("../config/database");
 
@@ -41,6 +42,52 @@ const createNotification = async (req, res) => {
     // ❌ Rollback in case of an error
     await t.rollback();
     console.error("Transaction failed:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const createNotificationForAll = async (req, res) => {
+  const t = await sequelize.transaction();
+
+  try {
+    const { title, message, admin_id } = req.body;
+
+    // Step 1: Create the notification
+    const newNotification = await Notification.create(
+      {
+        title,
+        message,
+        admin_id,
+      },
+      { transaction: t }
+    );
+
+    // Step 2: Get all customer IDs
+    const customers = await Customer.findAll({
+      attributes: ["customer_id"],
+      transaction: t,
+    });
+
+    // Step 3: Create CustomerNotification entries for all customers
+    const customerNotifications = customers.map((customer) => ({
+      customer_id: customer.customer_id,
+      notification_id: newNotification.notification_id,
+    }));
+
+    await CustomerNotification.bulkCreate(customerNotifications, {
+      transaction: t,
+    });
+
+    // Step 4: Commit the transaction
+    await t.commit();
+
+    res.status(201).json({
+      message: "Notification sent to all customers successfully.",
+      notification: newNotification,
+    });
+  } catch (error) {
+    await t.rollback();
+    console.error("Send to all failed:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -120,6 +167,7 @@ const deleteNotification = async (req, res) => {
 
 module.exports = {
   createNotification,
+  createNotificationForAll,
   getAllNotifications,
   getNotificationById,
   updateNotification,

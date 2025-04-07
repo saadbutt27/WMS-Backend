@@ -12,6 +12,7 @@ const Tanker = require("./tankerModel");
 const Bookings = require("./bookingsModel");
 const Notification = require("./notificationsModel");
 const CustomerNotification = require("./customerNotificationsModel.js");
+const Complain = require("./complainModel.js");
 
 // Reletionship of water tank table
 // with water tank status
@@ -159,6 +160,23 @@ Notification.hasMany(CustomerNotification, {
   foreignKey: "notification_id",
 });
 
+//Compalins relationships
+// with customer
+Complain.belongsTo(Customer, {
+  foreignKey: "customer_id",
+});
+Customer.hasMany(Complain, {
+  foreignKey: "customer_id",
+});
+
+// with admin
+Complain.belongsTo(Admin, {
+  foreignKey: "admin_id",
+});
+Admin.hasMany(Complain, {
+  foreignKey: "admin_id",
+});
+
 module.exports = {
   WaterTank,
   WaterTankStatus,
@@ -174,4 +192,5 @@ module.exports = {
   Tanker,
   Notification,
   CustomerNotification,
+  Complain,
 };
