@@ -1,36 +1,31 @@
 const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/database'); // Import the sequelize instance
+const { sequelize } = require('../config/database');
 
-const ConfirmedBooking = sequelize.define('ConfirmedBooking', {
-  booking_id: {
-    type: DataTypes.INTEGER,
+const ConfirmedBooking = sequelize.define("confirmedbookings", {
+  order_ID: {
+    type: DataTypes.STRING,
     allowNull: false,
     unique: true,
   },
-  customer_name: {
+  username: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  tanker_type: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  date: {
+  booking_date: {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  time: {
-    type: DataTypes.TIME,
+  pickup_location: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
   status: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'Confirmed',
-  }
+  },
 }, {
-  timestamps: true, // Automatically adds createdAt and updatedAt fields
-  tableName: 'ConfirmedBookings', // Ensure this matches the exact table name in the database
+  timestamps: true,
+  tableName: 'confirmedbookings',
 });
 
 module.exports = ConfirmedBooking;

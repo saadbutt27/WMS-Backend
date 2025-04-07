@@ -1,21 +1,11 @@
-const ConfirmedBooking = require('../models/confirmedBookingModel'); // Import the ConfirmedBooking model
+const ConfirmedBooking = require("../models/confirmedBookingModel");
 
 // Create a new confirmed booking
 exports.createConfirmedBooking = async (req, res) => {
   try {
-    const { booking_id, customer_name, tanker_type, date, time, status } = req.body;
-
-    // Create the confirmed booking
-    const newConfirmedBooking = await ConfirmedBooking.create({
-      booking_id,
-      customer_name,
-      tanker_type,
-      date,
-      time,
-      status: status || 'Confirmed', // Default status is "Confirmed"
-    });
-
-    res.status(201).json(newConfirmedBooking);
+    const { order_ID, username, booking_date, pickup_location, status } = req.body;
+    const newBooking = await ConfirmedBooking.create({ order_ID, username, booking_date, pickup_location, status });
+    res.status(201).json(newBooking);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -24,61 +14,50 @@ exports.createConfirmedBooking = async (req, res) => {
 // Get all confirmed bookings
 exports.getAllConfirmedBookings = async (req, res) => {
   try {
-    const confirmedBookings = await ConfirmedBooking.findAll();
-    res.status(200).json(confirmedBookings);
+    const bookings = await ConfirmedBooking.findAll();
+    res.status(200).json(bookings);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Get a single confirmed booking by ID
+// Get a single confirmed booking by order ID
 exports.getConfirmedBookingById = async (req, res) => {
   try {
-    const confirmedBooking = await ConfirmedBooking.findByPk(req.params.id);
-    if (!confirmedBooking) {
-      return res.status(404).json({ error: "Confirmed booking not found" });
+    const booking = await ConfirmedBooking.findByPk(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
     }
-    res.status(200).json(confirmedBooking);
+    res.status(200).json(booking);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Update a confirmed booking by ID
+// Update a confirmed booking by order ID
 exports.updateConfirmedBooking = async (req, res) => {
   try {
-    const { customer_name, tanker_type, date, time, status } = req.body;
-    const confirmedBooking = await ConfirmedBooking.findByPk(req.params.id);
-    if (!confirmedBooking) {
-      return res.status(404).json({ error: "Confirmed booking not found" });
+    const { order_ID, username, booking_date, pickup_location, status } = req.body;
+    const booking = await ConfirmedBooking.findByPk(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
     }
-
-    // Update the booking
-    await confirmedBooking.update({
-      customer_name,
-      tanker_type,
-      date,
-      time,
-      status
-    });
-
-    res.status(200).json(confirmedBooking);
+    await booking.update({ order_ID, username, booking_date, pickup_location, status });
+    res.status(200).json(booking);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Delete a confirmed booking by ID
+// Delete a confirmed booking by order ID
 exports.deleteConfirmedBooking = async (req, res) => {
   try {
-    const confirmedBooking = await ConfirmedBooking.findByPk(req.params.id);
-    if (!confirmedBooking) {
-      return res.status(404).json({ error: "Confirmed booking not found" });
+    const booking = await ConfirmedBooking.findByPk(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
     }
-
-    // Delete the booking
-    await confirmedBooking.destroy();
-    res.status(200).json({ message: "Confirmed booking deleted successfully" });
+    await booking.destroy();
+    res.status(200).json({ message: "Booking deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
