@@ -1,5 +1,4 @@
 const { Complain, Customer, Admin } = require("../models_v2/index");
-const { sequelize } = require("../config/database");
 
 // ✅ Create a new complain, by customer
 exports.createComplain = async (req, res) => {
@@ -44,7 +43,7 @@ exports.getAllComplains = async (req, res) => {
   try {
     const complains = await Complain.findAll({
       include: [
-        { model: Customer, attributes: ["full_name"] },
+        { model: Customer, attributes: ["full_name", "phone_number"] },
         { model: Admin, attributes: ["full_name"] },
       ],
     });
@@ -61,7 +60,7 @@ exports.getComplainById = async (req, res) => {
     const { id } = req.params;
     const complain = await Complain.findByPk(id, {
       include: [
-        { model: Customer, attributes: ["full_name"] },
+        { model: Customer, attributes: ["full_name", "phone_number"] },
         { model: Admin, attributes: ["full_name"] },
       ],
     });
@@ -121,7 +120,7 @@ exports.getComplainsByCustomer = async (req, res) => {
     const complains = await Complain.findAll({
       where: { customer_id: id },
       include: [
-        { model: Customer, attributes: ["full_name"] },
+        { model: Customer, attributes: ["full_name", "phone_number"] },
         { model: Admin, attributes: ["full_name"] },
       ],
     });
@@ -143,7 +142,7 @@ exports.getResolvedComplainsByAdmin = async (req, res) => {
         status: "Resolved",
       },
       include: [
-        { model: Customer, attributes: ["full_name"] },
+        { model: Customer, attributes: ["full_name", "phone_number"] },
         { model: Admin, attributes: ["full_name"] },
       ],
     });
@@ -161,7 +160,7 @@ exports.getUnresolvedComplains = async (req, res) => {
     const unresolvedComplains = await Complain.findAll({
       where: { status: "Pending" },
       include: [
-        { model: Customer, attributes: ["full_name"] },
+        { model: Customer, attributes: ["full_name", "phone_number"] },
         { model: Admin, attributes: ["full_name"] },
       ],
     });
@@ -176,6 +175,10 @@ exports.getResolvedComplains = async (req, res) => {
   try {
     const resolvedComplains = await Complain.findAll({
       where: { status: "Resolved" },
+      include: [
+        { model: Customer, attributes: ["full_name", "phone_number"] },
+        { model: Admin, attributes: ["full_name"] },
+      ],
     });
     res.json(resolvedComplains);
   } catch (error) {
