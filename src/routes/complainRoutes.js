@@ -11,7 +11,7 @@ router.put(
 router.get("/all-complains", complainController.getAllComplains);
 router.get("/single-complain/:id", complainController.getComplainById);
 
-router.patch("/update-complain/:id", complainController.updateComplain);
+// router.patch("/update-complain/:id", complainController.updateComplain);
 router.delete("/delete-complain/:id", complainController.deleteComplain);
 
 router.get("/customer/:id", complainController.getComplainsByCustomer);

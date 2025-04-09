@@ -77,23 +77,23 @@ exports.getComplainById = async (req, res) => {
 };
 
 // ✅ Update a complain
-exports.updateComplain = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
+// exports.updateComplain = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const updates = req.body;
 
-    const complain = await Complain.findByPk(id);
-    if (!complain) {
-      return res.status(404).json({ message: "Complain not found" });
-    }
+//     const complain = await Complain.findByPk(id);
+//     if (!complain) {
+//       return res.status(404).json({ message: "Complain not found" });
+//     }
 
-    await complain.update(updates);
-    res.json({ message: "Complain updated successfully", complain });
-  } catch (error) {
-    console.error("Error updating complain:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+//     await complain.update(updates);
+//     res.json({ message: "Complain updated successfully", complain });
+//   } catch (error) {
+//     console.error("Error updating complain:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
 
 // ✅ Delete a complain
 exports.deleteComplain = async (req, res) => {
