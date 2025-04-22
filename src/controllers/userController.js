@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const Customer = require("../models_v2/customerModel");
 const WaterTank = require("../models_v2/waterTankModel");
 const Sensor = require("../models_v2/sensorModel");
+const { UserTypes } = require("../models_v2/index");
 const { sequelize } = require("../config/database.js");
 const { Op } = require("sequelize");
 
@@ -17,6 +18,7 @@ const signupUser = async (req, res) => {
     tank_capacity,
     balance,
     device_id,
+    category,
   } = req.body;
 
   const t = await sequelize.transaction(); // start transaction
@@ -51,6 +53,8 @@ const signupUser = async (req, res) => {
         username,
         password: hashedPassword,
         balance,
+        user_type: 4, // Default to 4 for customer
+        category,
       },
       { transaction: t } // Pass transaction here
     );
@@ -177,6 +181,10 @@ const getUsers = async (req, res) => {
         {
           model: WaterTank,
           attributes: ["sensor_id"],
+        },
+        {
+          model: UserTypes,
+          attributes: ["type", "description"],
         },
       ],
     });

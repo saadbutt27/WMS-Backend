@@ -41,6 +41,18 @@ const Customer = sequelize.define(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    user_type_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    category: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+      defaultValue: "Corporate",
+      validate: {
+        isIn: [["Corporate", "Civil"]],
+      },
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

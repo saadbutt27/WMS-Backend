@@ -28,6 +28,10 @@ const Admin = sequelize.define(
     is_super: {
       type: DataTypes.BOOLEAN,
     },
+    user_type_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

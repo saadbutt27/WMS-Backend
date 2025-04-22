@@ -5,6 +5,7 @@ const {
   Customer,
   Tanker,
   Driver,
+  UserTypes,
 } = require("../models_v2/index"); // Adjust the path to your models
 
 const { sequelize } = require("../config/database.js");
@@ -91,6 +92,7 @@ exports.createDriver = async (req, res) => {
       license_number,
       username,
       password: hashedPassword,
+      user_type_id: 3, // Default to 3 for driver
     });
     // Respond with the new driver
     res.status(201).json({
@@ -108,7 +110,15 @@ exports.createDriver = async (req, res) => {
 
 exports.getAllDrivers = async (req, res) => {
   try {
-    const drivers = await Driver.findAll();
+    const drivers = await Driver.findAll({
+      // description from userTypes table
+      include: [
+        {
+          model: UserTypes,
+          attributes: ["type", "description"],
+        },
+      ],
+    });
     res.status(200).json(drivers);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -118,7 +128,14 @@ exports.getAllDrivers = async (req, res) => {
 exports.getDriverById = async (req, res) => {
   const driver_id = req.params.id;
   try {
-    const driver = await Driver.findByPk(driver_id);
+    const driver = await Driver.findByPk(driver_id, {
+      include: [
+        {
+          model: UserTypes,
+          attributes: ["type", "description"],
+        },
+      ],
+    });
     if (!driver) {
       return res.status(404).json({
         status: "error",

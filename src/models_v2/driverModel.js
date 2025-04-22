@@ -50,7 +50,10 @@ const Driver = sequelize.define(
       allowNull: false,
       unique: true,
     },
-
+    user_type_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     created_at: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,

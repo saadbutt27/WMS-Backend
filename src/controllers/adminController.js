@@ -25,6 +25,7 @@ exports.login = async (req, res) => {
       "password_hash",
       "created_at",
       "is_super",
+      "user_type_id",
     ], // Exclude password_hash
   });
 

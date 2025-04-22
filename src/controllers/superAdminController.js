@@ -1,11 +1,11 @@
-const { Admin } = require("../models_v2/index");
+const { Admin, UserTypes } = require("../models_v2/index");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { where, Op } = require("sequelize");
 const { sequelize } = require("../config/database.js");
 
-// Fetch customer details
+// Fetch admin details
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -20,6 +20,7 @@ exports.login = async (req, res) => {
       "password_hash",
       "created_at",
       "is_super",
+      "user_type_id",
     ], // Exclude password_hash
   });
 
@@ -66,6 +67,7 @@ exports.login = async (req, res) => {
     full_name: admin.full_name,
     email: admin.email,
     is_super: admin.is_super,
+    user_type: admin.user_type,
     admin_token: token,
   });
 };
@@ -78,7 +80,24 @@ exports.logout = async (req, res) => {
 exports.getAllAdmins = async (req, res) => {
   try {
     // Check if admin with the email already exists
-    const admins = await Admin.findAll();
+    const admins = await Admin.findAll({
+      attributes: [
+        "admin_id",
+        "full_name",
+        "email",
+        "password_hash",
+        "created_at",
+        "is_super",
+      ],
+      // description from userTypes table
+      include: [
+        {
+          model: UserTypes,
+          attributes: ["type", "description"],
+        },
+      ],
+
+    });
     // if (admins) {
     //   return res.status(400).json({ message: "Admins do not exist" });
     // }
@@ -94,7 +113,8 @@ exports.getAllAdmins = async (req, res) => {
 };
 
 exports.createAdmin = async (req, res) => {
-  const { full_name, email, password, is_super } = req.body;
+  const { full_name, email, password, is_super, user_type } = req.body;
+  const type = user_type === "Super Admin" ? 1 : 2; // Default to 1 if not provided
   const t = await sequelize.transaction(); // start transaction
   try {
     // Check if admin with the email already exists
@@ -122,6 +142,7 @@ exports.createAdmin = async (req, res) => {
         email,
         password_hash: hashedPassword, // Save hashed password
         is_super,
+        user_type_id: type, // Set user_type based on the provided value
       },
       { transaction: t }
     );
@@ -141,7 +162,8 @@ exports.createAdmin = async (req, res) => {
 };
 
 exports.updateAdmin = async (req, res) => {
-  const { admin_id, full_name, email, password, is_super } = req.body;
+  const { admin_id, full_name, email, password, is_super, user_type } = req.body;
+  const type = user_type === "Super Admin" ? 1 : 2; // Default to 1 if not provided
   const t = await sequelize.transaction(); // start transaction
   try {
     // Check if admin with the email already exists
@@ -170,6 +192,7 @@ exports.updateAdmin = async (req, res) => {
         email,
         password_hash: hashedPassword,
         is_super,
+        user_type_id: type, // Set user_type based on the provided value 
       },
       {
         where: { admin_id },

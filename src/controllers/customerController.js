@@ -5,6 +5,7 @@ const {
   Request,
   Customer,
   Sensor,
+  UserTypes,
 } = require("../models_v2/index");
 const { sequelize } = require("../config/database.js");
 const bcrypt = require("bcrypt");
@@ -134,6 +135,7 @@ exports.getCustomerProfile = async (req, res) => {
         "password",
         "created_at",
       ],
+
       include: [
         {
           model: WaterTank,
@@ -149,6 +151,10 @@ exports.getCustomerProfile = async (req, res) => {
               order: [["status_date", "DESC"]],
             },
           ],
+        },
+        {
+          model: UserTypes,
+          attributes: ["type", "description"],
         },
       ],
     });
