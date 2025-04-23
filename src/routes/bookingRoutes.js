@@ -12,6 +12,7 @@ router.get("/single-booking/:id", bookingController.getBookingById);
 router.put("/update-booking/:id", bookingController.updateBooking);
 router.delete("/delete-booking/:id", bookingController.deleteBooking);
 router.get("/my-bookings/:id", bookingController.getBookingForCustomer);
+router.get("/my-bookings-report/:id", bookingController.getBookingReport);
 ////
 
 router.get("/previous-requests", bookingController.previousBookings);

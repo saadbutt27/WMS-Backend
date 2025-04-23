@@ -15,6 +15,7 @@ const {
   Admin,
 } = require("../models_v2/index");
 const { sequelize } = require("../config/database");
+const { Op } = require("sequelize");
 
 function generateNumericCode(length = 6) {
   let code = "";
@@ -379,6 +380,55 @@ exports.approveRequest = async (req, res) => {
     res.status(200).json({ message: "Tanker scheduled successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message || "Internal Server Error" });
+  }
+};
+
+exports.getBookingReport = async (req, res) => {
+  const { start_date, end_date } = req.body;
+  const customer_id = req.params.id;
+  // Validate the query parameters
+  if (!customer_id) {
+    return res.status(400).json({ error: "customer_id is required" });
+  }
+  // Validate the date range
+  if (!start_date || !end_date) {
+    return res
+      .status(400)
+      .json({ error: "startDate and endDate are required" });
+  }
+  try {
+    const bookings = await Bookings.findAll({
+      where: {
+        scheduled_date: {
+          [Op.between]: [new Date(start_date), new Date(end_date)],
+        },
+        customer_id: customer_id,
+      },
+      attributes: [
+        "scheduled_date",
+      ],
+      include: [
+        {
+          model: Request,
+          as: "Request",
+          attributes: [
+            "requested_liters",
+            "request_date",
+          ],
+        },
+        {
+          model: Tanker,
+          as: "Tanker",
+          attributes: ["tanker_id", "tanker_name", "cost"],
+        }
+      ],
+    });
+    res.status(200).json(bookings);
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while retrieving bookings" });
   }
 };
 

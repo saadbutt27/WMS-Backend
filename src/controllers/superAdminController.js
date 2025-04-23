@@ -113,7 +113,7 @@ exports.getAllAdmins = async (req, res) => {
 };
 
 exports.createAdmin = async (req, res) => {
-  const { full_name, email, password, is_super, user_type } = req.body;
+  const { full_name, email, password, user_type } = req.body;
   const type = user_type === "Super Admin" ? 1 : 2; // Default to 1 if not provided
   const t = await sequelize.transaction(); // start transaction
   try {
@@ -141,7 +141,7 @@ exports.createAdmin = async (req, res) => {
         full_name,
         email,
         password_hash: hashedPassword, // Save hashed password
-        is_super,
+        is_super: type === 1, // Set is_super based on user_type
         user_type_id: type, // Set user_type based on the provided value
       },
       { transaction: t }
