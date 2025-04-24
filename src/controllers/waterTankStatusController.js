@@ -322,8 +322,8 @@ exports.getDailyAvgConsumption = async (req, res) => {
 // };
 
 exports.getTankStatusWithConsumption = async (req, res) => {
-  const { start_date, end_date } = req.body;
-  const customer_id = req.params.id;
+  const { customer_id, start_date, end_date } = req.query;
+  console.log(customer_id, start_date, end_date); // Debugging line
 
   if (!customer_id) {
     return res.status(400).json({ error: "customer_id is required" });
@@ -402,25 +402,3 @@ exports.getTankStatusWithConsumption = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-// exports.getTankStatusByDate = async (req, res) => {
-//   const { tank_id, date } = req.query; // Get tank_id and date from request params
-
-//   try {
-//     const tankStatus = await WaterTankStatus.findAll({
-//       where: {
-//         tank_id: tank_id,
-//         status_date: date,
-//       },
-//       order: [["status_time", "DESC"]],
-//     });
-
-//     if (!tankStatus) {
-//       return res.status(404).json({ message: "No status found for this tank_id." });
-//     }
-
-//     res.status(200).json(tankStatus);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// }

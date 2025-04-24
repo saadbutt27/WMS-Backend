@@ -34,6 +34,7 @@ const signupUser = async (req, res) => {
     });
 
     if (existingCustomer) {
+      console.log("Email or username already exists.");
       await t.rollback();
       return res
         .status(400)
@@ -53,7 +54,7 @@ const signupUser = async (req, res) => {
         username,
         password: hashedPassword,
         balance,
-        user_type: 4, // Default to 4 for customer
+        user_type_id: 4, // Default to 4 for customer
         category,
       },
       { transaction: t } // Pass transaction here

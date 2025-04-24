@@ -384,8 +384,7 @@ exports.approveRequest = async (req, res) => {
 };
 
 exports.getBookingReport = async (req, res) => {
-  const { start_date, end_date } = req.body;
-  const customer_id = req.params.id;
+  const { customer_id, start_date, end_date } = req.query;
   // Validate the query parameters
   if (!customer_id) {
     return res.status(400).json({ error: "customer_id is required" });
@@ -404,23 +403,18 @@ exports.getBookingReport = async (req, res) => {
         },
         customer_id: customer_id,
       },
-      attributes: [
-        "scheduled_date",
-      ],
+      attributes: ["scheduled_date"],
       include: [
         {
           model: Request,
           as: "Request",
-          attributes: [
-            "requested_liters",
-            "request_date",
-          ],
+          attributes: ["requested_liters", "request_date"],
         },
         {
           model: Tanker,
           as: "Tanker",
           attributes: ["tanker_id", "tanker_name", "cost"],
-        }
+        },
       ],
     });
     res.status(200).json(bookings);
