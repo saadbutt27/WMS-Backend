@@ -30,6 +30,10 @@ const Sensor = sequelize.define(
         isIn: [["Not Assigned", "Assigned"]],
       },
     },
+    created_at: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     timestamps: false, // Automatically adds createdAt and updatedAt fields

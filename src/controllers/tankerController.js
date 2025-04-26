@@ -1,26 +1,78 @@
 const { sequelize } = require("../config/database.js");
 const Customer = require("../models_v2/customerModel");
 const Tanker = require("../models_v2/tankerModel");
+const TankerPhaseRelation = require("../models_v2/tankerPhaseRelationModel");
 const Request = require("../models_v2/requestModel");
-const { where } = require("sequelize");
 
 // Create a new tanker
 exports.createTanker = async (req, res) => {
   try {
-    const { tanker_name, plate_number, capacity, price_per_liter, cost } =
-      req.body; // Use plate_number and tanker_model as in model
-    const newTanker = await Tanker.create({
-      plate_number,
+    const {
       tanker_name,
+      plate_number,
       capacity,
       price_per_liter,
       cost,
-    });
+      phase_id,
+    } = req.body; // Use plate_number and tanker_model as in model
+    // start a transaction
+    const transaction = await sequelize.transaction();
+    const newTanker = await Tanker.create(
+      {
+        plate_number,
+        tanker_name,
+        capacity,
+        price_per_liter,
+        cost,
+      },
+      { transaction, returning: true } // IMPORTANT: Returns the created row(s)
+    );
+
+    const tanker_id = newTanker.tanker_id; // Get the generated tanker_id
+
+    const newRelation = await TankerPhaseRelation.create(
+      {
+        tanker_id,
+        phase_id,
+      },
+
+      { transaction, returning: true } // IMPORTANT: Returns the created row(s)
+    );
+    // Commit the transaction
+    await transaction.commit();
+
+    newTanker.phase_id = newRelation.phase_id; // Add phase_id to the tanker object
     res.status(201).json(newTanker);
   } catch (error) {
+    console.error(error);
+    // Rollback transaction on error
+    await t.rollback();
+    // if (error.name === "SequelizeValidationError") {
+    //   // extract each validation message
+    //   const messages = error.errors.map((e) => `${e.path}: ${e.message}`);
+    //   console.error("Validation errors:", messages);
+    //   return res.status(400).json({ errors: messages });
+    // }
+
+    // console.error("Unexpected error:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
+// Create phase tanker relation
+// exports.createPhaseTankerRelation = async (req, res) => {
+//   const { tanker_id, phase_id } = req.body;
+//   try {
+//     const newRelation = await TankerPhaseRelation.create({
+//       tanker_id,
+//       phase_id,
+//     });
+//     res.status(201).json(newRelation);
+//   } catch (error) {
+//     console.error("Error creating phase-tanker relation:", error);
+//     res.status(500).json({ error: "Failed to create relation" });
+//   }
+// };
 
 // Get all tankers
 exports.getAllTankers = async (req, res) => {

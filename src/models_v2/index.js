@@ -14,6 +14,8 @@ const Notification = require("./notificationsModel");
 const CustomerNotification = require("./customerNotificationsModel.js");
 const Complain = require("./complainModel.js");
 const UserTypes = require("./userTypesModel.js");
+const Phase = require("./phaseModel.js");
+const TankerPhaseRelation = require("./tankerPhaseRelationModel.js");
 
 // Reletionship of water tank table
 // with water tank status
@@ -189,6 +191,18 @@ UserTypes.hasOne(Customer, { foreignKey: "user_type_id" });
 Driver.belongsTo(UserTypes, { foreignKey: "user_type_id" });
 UserTypes.hasOne(Driver, { foreignKey: "user_type_id" });
 
+// Phase relationships
+// with customer
+Customer.belongsTo(Phase, { foreignKey: "phase_number" });
+Phase.hasMany(Customer, { foreignKey: "phase_number" });  
+
+// tankerPhaseRelation relationships
+// with phase
+TankerPhaseRelation.belongsTo(Phase, { foreignKey: "phase_id" });
+Phase.hasMany(TankerPhaseRelation, { foreignKey: "phase_id" });
+// with tanker
+TankerPhaseRelation.belongsTo(Tanker, { foreignKey: "tanker_id" });
+Tanker.hasMany(TankerPhaseRelation, { foreignKey: "tanker_id" });
 
 
 module.exports = {
@@ -208,4 +222,6 @@ module.exports = {
   CustomerNotification,
   Complain,
   UserTypes,
+  Phase,
+  TankerPhaseRelation,
 };

@@ -10,6 +10,8 @@ router.get("/request-tanker", tankerController.getAllRequests);
 
 // Create a new tanker
 router.post("/", tankerController.createTanker);
+// Create tanker_phase_relationship
+// router.post("/tanker-phase", tankerController.createTankerPhase);
 
 // Get all tankers
 router.get("/", tankerController.getAllTankers);

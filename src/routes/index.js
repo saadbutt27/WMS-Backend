@@ -12,6 +12,7 @@ const driverRoutes = require("./driverRoutes");
 const notificationRoutes = require("./notificationRoutes");
 const customerNotificationRoutes = require("./customerNotificationRoutes");
 const complainRoutes = require("./complainRoutes");
+const phaseRoutes = require("./phaseRoutes");
 
 const router = express.Router();
 
@@ -29,5 +30,6 @@ router.use("/driver", driverRoutes);
 router.use("/notification", notificationRoutes);
 router.use("/customerNotification", customerNotificationRoutes);
 router.use("/complain", complainRoutes);
+router.use("/phase", phaseRoutes);
 
 module.exports = router;

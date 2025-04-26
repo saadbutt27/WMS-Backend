@@ -25,8 +25,13 @@ const Customer = sequelize.define(
       type: DataTypes.STRING(15),
       allowNull: false,
     },
-    home_address: {
+    street_address: {
       type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    phase_number: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     username: {
       type: DataTypes.STRING(100),
@@ -50,7 +55,7 @@ const Customer = sequelize.define(
       allowNull: false,
       defaultValue: "Corporate",
       validate: {
-        isIn: [["Corporate", "Civil"]],
+        isIn: [["Corporate", "Civil", "DHA Employee"]],
       },
     },
     created_at: {
