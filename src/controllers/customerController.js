@@ -6,6 +6,7 @@ const {
   Customer,
   Sensor,
   UserTypes,
+  Phase
 } = require("../models_v2/index");
 const { sequelize } = require("../config/database.js");
 const bcrypt = require("bcrypt");
@@ -129,7 +130,7 @@ exports.getCustomerProfile = async (req, res) => {
         "full_name",
         "email",
         "phone_number",
-        "home_address",
+        "street_address",
         "username",
         "balance",
         "password",
@@ -156,6 +157,10 @@ exports.getCustomerProfile = async (req, res) => {
           model: UserTypes,
           attributes: ["type", "description"],
         },
+        {
+          model: Phase,
+          attributes: ["phase_id", "phase_name"],
+        }
       ],
     });
 

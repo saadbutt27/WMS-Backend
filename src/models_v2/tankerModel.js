@@ -40,6 +40,10 @@ const Tanker = sequelize.define(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
+    assigned_driver_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     timestamps: false, // Automatically adds createdAt and updatedAt fields

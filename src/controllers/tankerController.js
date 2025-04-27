@@ -1,11 +1,13 @@
 const { sequelize } = require("../config/database.js");
 const Customer = require("../models_v2/customerModel");
 const Tanker = require("../models_v2/tankerModel");
+const Driver = require("../models_v2/driverModel");
 const TankerPhaseRelation = require("../models_v2/tankerPhaseRelationModel");
 const Request = require("../models_v2/requestModel");
 
 // Create a new tanker
 exports.createTanker = async (req, res) => {
+  const transaction = await sequelize.transaction();
   try {
     const {
       tanker_name,
@@ -13,10 +15,43 @@ exports.createTanker = async (req, res) => {
       capacity,
       price_per_liter,
       cost,
+      assigned_driver_id,
       phase_id,
     } = req.body; // Use plate_number and tanker_model as in model
     // start a transaction
-    const transaction = await sequelize.transaction();
+    // Check if the driver exists
+    const driver = await Driver.findByPk(assigned_driver_id);
+
+    if (!driver) {
+      await transaction.rollback();
+      return res
+        .status(400)
+        .json({ status: "error", message: "Driver not found" });
+    }
+
+    if (driver.dataValues.availability_status === "Unavailable") {
+      await transaction.rollback();
+      return res.status(400).json({
+        status: "error",
+        message: "Driver is not available",
+      });
+    }
+
+    // Check if the tanker already exists
+    const existingTanker = await Tanker.findOne({
+      where: {
+        plate_number,
+      },
+    });
+    if (existingTanker) {
+      // Rollback transaction if driver not found
+      await transaction.rollback();
+      // Return error response
+      return res
+        .status(400)
+        .json({ status: "error", message: "Tanker already exists" });
+    }
+
     const newTanker = await Tanker.create(
       {
         plate_number,
@@ -24,6 +59,7 @@ exports.createTanker = async (req, res) => {
         capacity,
         price_per_liter,
         cost,
+        assigned_driver_id,
       },
       { transaction, returning: true } // IMPORTANT: Returns the created row(s)
     );
@@ -46,7 +82,7 @@ exports.createTanker = async (req, res) => {
   } catch (error) {
     console.error(error);
     // Rollback transaction on error
-    await t.rollback();
+    await transaction.rollback();
     // if (error.name === "SequelizeValidationError") {
     //   // extract each validation message
     //   const messages = error.errors.map((e) => `${e.path}: ${e.message}`);

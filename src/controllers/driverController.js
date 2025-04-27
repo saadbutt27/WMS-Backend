@@ -6,6 +6,7 @@ const {
   Tanker,
   Driver,
   UserTypes,
+  Phase,
 } = require("../models_v2/index"); // Adjust the path to your models
 
 const { sequelize } = require("../config/database.js");
@@ -68,7 +69,7 @@ exports.logout = async (req, res) => {
 exports.createDriver = async (req, res) => {
   const { full_name, email, phone_number, license_number, username, password } =
     req.body;
-  console.log(req.body);
+  // console.log(req.body);
   try {
     // Check if email or username is used by someone else
     const existingDriver = await Driver.findOne({
@@ -204,8 +205,14 @@ exports.getPendingBookingsForDriver = async (req, res) => {
               attributes: [
                 "customer_id",
                 "full_name",
-                "home_address",
+                "street_address",
                 "phone_number",
+              ],
+              include: [
+                {
+                  model: Phase, // <-- Join with Phase table
+                  attributes: ["phase_id", "phase_name"], // 
+                },
               ],
             },
           ],

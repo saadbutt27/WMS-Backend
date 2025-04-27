@@ -133,7 +133,6 @@ WaterTank.belongsTo(Sensor, {
 // One-to-One Relationship
 Driver.hasOne(Tanker, {
   foreignKey: "assigned_driver_id",
-  onDelete: "SET NULL",
 });
 Tanker.belongsTo(Driver, {
   foreignKey: "assigned_driver_id",

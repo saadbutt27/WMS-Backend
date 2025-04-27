@@ -196,7 +196,29 @@ exports.getAllBookings = async (req, res) => {
 // Get a single booking by ID
 exports.getBookingById = async (req, res) => {
   try {
-    const booking = await Bookings.findByPk(req.params.id);
+    const booking = await Bookings.findByPk(req.params.id, {
+      attributes: [
+        "booking_id",
+        "request_id",
+        "scheduled_date",
+        "status",
+        "booking_code",
+      ],
+      include: [
+        {
+          model: Admin,
+          attributes: ["admin_id", "full_name"], // Fetch admin name
+        },
+        {
+          model: Customer,
+          attributes: ["customer_id", "full_name"], // Fetch customer name
+        },
+        {
+          model: Tanker,
+          attributes: ["tanker_id", "tanker_name"], // Fetch customer name
+        },
+      ],
+    });
     if (!booking) {
       return res.status(404).json({ error: "Booking not found" });
     }
