@@ -3,6 +3,7 @@ const Customer = require("../models_v2/customerModel");
 const Tanker = require("../models_v2/tankerModel");
 const Driver = require("../models_v2/driverModel");
 const TankerPhaseRelation = require("../models_v2/tankerPhaseRelationModel");
+const Phase = require("../models_v2/phaseModel");
 const Request = require("../models_v2/requestModel");
 
 // Create a new tanker
@@ -117,7 +118,22 @@ exports.getAllTankers = async (req, res) => {
       // where: {
       //   availability_status: "Available",
       // },
-      // attributes: ["tanker_id", "capacity", "plate_number"]
+      // attributes: ["tanker_id", "tanker_name", "capacity", "plate_number"],
+      include: [
+        {
+          model: Driver,
+          attributes: ["driver_id", "full_name"],
+        },
+        {
+          model: TankerPhaseRelation,
+          include: [
+            {
+              model: Phase,
+              attributes: ["phase_id", "phase_name"],
+            },
+          ],
+        },
+      ],
     });
     // console.log("Tankers: ", tankers);
     res.status(200).json(tankers);
@@ -153,7 +169,24 @@ exports.getTotalTankers = async (req, res) => {
 // Get a single tanker by ID
 exports.getTankerById = async (req, res) => {
   try {
-    const tanker = await Tanker.findByPk(req.params.id);
+    const tanker = await Tanker.findByPk(req.params.id, {
+      include: [
+        {
+          model: Driver,
+          attributes: ["driver_id", "full_name"],
+        },
+        {
+          model: TankerPhaseRelation,
+          include: [
+            {
+              model: Phase,
+              attributes: ["phase_id", "phase_name"],
+            },
+          ],
+        },
+      ],
+    }
+    );
     if (!tanker) {
       return res.status(404).json({ error: "Tanker not found" });
     }

@@ -1,7 +1,9 @@
 const { sequelize } = require("../config/database.js");
 const WaterTankStatus = require("../models_v2/waterTankStatusModel.js");
 const WaterTank = require("../models_v2/waterTankModel.js");
-const { Op, Sequelize, fn, col, literal } = require("sequelize");
+const Notification = require("../models_v2/notificationsModel.js");
+const CustomerNotification = require("../models_v2/customerNotificationsModel.js");
+const { Op, Sequelize, literal } = require("sequelize");
 
 // Create a new tanker
 exports.createTankStatus = async (req, res) => {
@@ -13,6 +15,32 @@ exports.createTankStatus = async (req, res) => {
       tank_id,
       water_level: level,
     });
+
+    // get tank capacity from tank table based on tank id
+    const tank = await WaterTank.findOne({
+      where: {
+        tank_id: tank_id,
+      },
+      attributes: ["tank_id", "capacity", "customer_id"],
+    });
+    const tank_capacity = tank.capacity; // 5000 gallons
+    // As we have tank capacity we can calculate available water in tank in gallons using water_level(which is in percentage) and tank_capacity
+    const availableWater = (level / 100) * tank_capacity; // in gallons
+    // if water level is less than 25 gallons then send alert to customer
+    if (availableWater < 25) {
+      // create a notification for customer
+      const notification = await Notification.create({
+        title: "Low Water Level Alert",
+        message: `Water level is low, ${availableWater} gallons in your tank. Please request for a refill.`,
+        admin_id: 3,
+      });
+      // create an entry in customer notifications table
+      await CustomerNotification.create({
+        customer_id: tank.customer_id,
+        notification_id: notification.notification_id,
+      });
+    }
+
     res.status(201).json(newTanker);
   } catch (error) {
     res.status(500).json({ error: error.message });

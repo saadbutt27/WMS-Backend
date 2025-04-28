@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const Customer = require("../models_v2/customerModel");
 const WaterTank = require("../models_v2/waterTankModel");
 const Sensor = require("../models_v2/sensorModel");
-const { UserTypes } = require("../models_v2/index");
+const { UserTypes, Phase } = require("../models_v2/index");
 const { sequelize } = require("../config/database.js");
 const { Op } = require("sequelize");
 
@@ -175,7 +175,7 @@ const getUsers = async (req, res) => {
         "full_name",
         "email",
         "phone_number",
-        "home_address",
+        "street_address",
         "username",
         "balance",
         "created_at",
@@ -188,6 +188,10 @@ const getUsers = async (req, res) => {
         {
           model: UserTypes,
           attributes: ["type", "description"],
+        },
+        {
+          model: Phase,
+          attributes: ["phase_id", "phase_name"],
         },
       ],
     });
