@@ -49,8 +49,10 @@ exports.getCustomerDetails = async (req, res) => {
     // let consumptionDifference = 0;
     let lastRequest = null;
     let expectedToLastUntil = null;
+    let gallons = null;
 
     if (latestStatus) {
+      gallons = (latestStatus.water_level / 100) * waterTank.capacity; // in gallons
       waterLevelInLiters = latestStatus.water_level;
       waterLevelPercentage = (waterLevelInLiters / waterTank.capacity) * 100;
     }
@@ -106,7 +108,8 @@ exports.getCustomerDetails = async (req, res) => {
       expected_to_last_until: expectedToLastUntil,
       // water_consumption_last_24_hours: consumptionDifference,
       capacity: waterTank.capacity,
-      current_gallons: waterTank.capacity * waterLevelPercentage,
+      current_gallons: gallons, // in gallons,
+      // current_gallons: waterTank.capacity * waterLevelPercentage,
     };
 
     return res.status(200).json(response);

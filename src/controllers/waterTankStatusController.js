@@ -81,6 +81,46 @@ exports.getTankStatus = async (req, res) => {
   }
 };
 
+exports.getTankStatusGallons = async (req, res) => {
+  const { tank_id } = req.query;
+
+  try {
+    const latestTankStatus = await WaterTankStatus.findOne({
+      where: {
+        tank_id: tank_id,
+      },
+      order: [
+        ["status_date", "DESC"],
+        ["status_time", "DESC"],
+      ],
+      attributes: ["tank_id", "water_level"],
+    });
+    const water_level = latestTankStatus.water_level; // in percentage
+
+    // get tank capacity from tank table based on tank id
+    const tank = await WaterTank.findOne({
+      where: {
+        tank_id: tank_id,
+      },
+      attributes: ["tank_id", "capacity", "customer_id"],
+    });
+    const tank_capacity = tank.capacity; // 5000 gallons
+
+    // calculate gallons from percentage
+    const gallons = (water_level / 100) * tank_capacity; // in gallons
+
+    if (!latestTankStatus) {
+      return res
+        .status(404)
+        .json({ message: "No status found for this tank_id." });
+    }
+
+    res.status(200).json(gallons);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.getDailyAvgConsumption = async (req, res) => {
   try {
     const tankId = req.query.tank_id; // Get tank_id from request params or default to 1

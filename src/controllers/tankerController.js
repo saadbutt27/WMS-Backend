@@ -75,6 +75,13 @@ exports.createTanker = async (req, res) => {
 
       { transaction, returning: true } // IMPORTANT: Returns the created row(s)
     );
+
+    // Update the driver's availability status
+    await Driver.update(
+      { availability_status: "Unavailable" },
+      { where: { driver_id: assigned_driver_id }, transaction }
+    );
+    
     // Commit the transaction
     await transaction.commit();
 

@@ -184,6 +184,12 @@ const getUsers = async (req, res) => {
         {
           model: WaterTank,
           attributes: ["sensor_id"],
+          include: [
+            {
+              model: Sensor,
+              attributes: ["sensor_name"],
+            },
+          ],
         },
         {
           model: UserTypes,
