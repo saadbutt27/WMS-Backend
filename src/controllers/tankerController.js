@@ -67,25 +67,59 @@ exports.createTanker = async (req, res) => {
 
     const tanker_id = newTanker.tanker_id; // Get the generated tanker_id
 
-    const newRelation = await TankerPhaseRelation.create(
-      {
-        tanker_id,
-        phase_id,
-      },
+    // an array of phase ids from frontend will come in the request, make a for loop to make an entry in tanker phase relation table to enter every phase for that tanker
+    for (let i = 0; i < phase_id.length; i++) {
+      const phase = await Phase.findByPk(phase_id[i]);
+      if (!phase) {
+        await transaction.rollback();
+        return res
+          .status(400)
+          .json({ status: "error", message: "Phase not found" });
+      }
+      // Check if the tanker already has this phase
+      const existingTankerPhase = await TankerPhaseRelation.findOne({
+        where: {
+          tanker_id,
+          phase_id: phase_id[i],
+        },
+      });
+      if (existingTankerPhase) {
+        // Rollback transaction if driver not found
+        await transaction.rollback();
+        // Return error response
+        return res
+          .status(400)
+          .json({ status: "error", message: "Tanker already has this phase" });
+      }
+      // Create the relation
+      await TankerPhaseRelation.create(
+        {
+          tanker_id,
+          phase_id: phase_id[i],
+        },
+        { transaction }
+      );
+    }
 
-      { transaction, returning: true } // IMPORTANT: Returns the created row(s)
-    );
+    // const newRelation = await TankerPhaseRelation.create(
+    //   {
+    //     tanker_id,
+    //     phase_id,
+    //   },
+
+    //   { transaction, returning: true } // IMPORTANT: Returns the created row(s)
+    // );
 
     // Update the driver's availability status
     await Driver.update(
       { availability_status: "Unavailable" },
       { where: { driver_id: assigned_driver_id }, transaction }
     );
-    
+
     // Commit the transaction
     await transaction.commit();
 
-    newTanker.phase_id = newRelation.phase_id; // Add phase_id to the tanker object
+    // newTanker.phase_id = newRelation.phase_id; // Add phase_id to the tanker object
     res.status(201).json(newTanker);
   } catch (error) {
     console.error(error);
@@ -163,6 +197,32 @@ exports.getAvailabletankers = async (req, res) => {
   }
 };
 
+exports.getAvailabletankersPhaseWise = async (req, res) => {
+  // get phase id from params
+  const phaseId = req.params.id;
+  try {
+    const tankers = await Tanker.findAll({
+      where: {
+        availability_status: "Available",
+      },
+      include: [
+        {
+          model: TankerPhaseRelation,
+          where: {
+            phase_id: phaseId,
+          },
+          attributes: [], // omit attributes from the join table if not needed
+        },
+      ],
+    });
+
+    res.status(200).json(tankers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 exports.getTotalTankers = async (req, res) => {
   try {
     const totalTankers = await Tanker.count({});
@@ -192,8 +252,7 @@ exports.getTankerById = async (req, res) => {
           ],
         },
       ],
-    }
-    );
+    });
     if (!tanker) {
       return res.status(404).json({ error: "Tanker not found" });
     }
@@ -213,6 +272,7 @@ exports.updateTanker = async (req, res) => {
     capacity,
     price_per_liter,
     cost,
+    assigned_driver_id,
   } = req.body;
 
   try {
@@ -224,6 +284,7 @@ exports.updateTanker = async (req, res) => {
         capacity,
         price_per_liter,
         cost,
+        assigned_driver_id,
       },
       {
         where: { tanker_id: id },

@@ -34,7 +34,7 @@ exports.login = async (req, res) => {
     // Verify the password
     // const isPasswordValid = driver.password === password;
     const isPasswordValid = await bcrypt.compare(password, driver.password);
-    console.log(driver.password, password, isPasswordValid);
+    // console.log(driver.password, password, isPasswordValid);
 
     if (!isPasswordValid) {
       return res.status(401).json({

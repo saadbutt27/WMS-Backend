@@ -143,7 +143,7 @@ exports.getCustomerProfile = async (req, res) => {
       include: [
         {
           model: WaterTank,
-          attributes: ["tank_id", "sensor_id"],
+          attributes: ["tank_id", "capacity", "sensor_id"],
           required: false,
           include: [
             {

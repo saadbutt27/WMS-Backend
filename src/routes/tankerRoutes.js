@@ -17,6 +17,7 @@ router.post("/", tankerController.createTanker);
 router.get("/", tankerController.getAllTankers);
 router.get("/total-tankers", tankerController.getTotalTankers);
 router.get("/available-tankers", tankerController.getAvailabletankers);
+router.get("/tankers_phasewise/:id", tankerController.getAvailabletankersPhaseWise);
 
 // Get a single tanker by ID
 router.get("/:id", tankerController.getTankerById);
