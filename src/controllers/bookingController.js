@@ -28,10 +28,15 @@ function generateNumericCode(length = 6) {
 // Create a new booking request
 exports.createBooking = async (req, res) => {
   // start transaction
-  const { request_id, requested_gallons, admin_id, tanker_id, customer_id, scheduled_date } =
+  const { request_id, admin_id, tanker_id, customer_id, scheduled_date } =
     req.body;
   const t = await sequelize.transaction();
   try {
+    const request_data = await Request.findOne({
+      where: { request_id},
+      attributes: ["requested_gallons"],
+      transaction: t,
+    })
     // Update Request request_status to "Accepted"
     await Request.update(
       { request_status: "Accepted" },
@@ -62,9 +67,12 @@ exports.createBooking = async (req, res) => {
     if (!customer) {
       throw new Error("Customer not found");
     }
+    const requested_gallons = request_data.dataValues.requested_gallons;
     const balance = customer.dataValues.balance;
+    // console.log(balance, price_per_gallon, requested_gallons, price_per_gallon * requested_gallons);
     if (balance < price_per_gallon * requested_gallons) {
-      throw new Error("Insufficient balance");
+      await t.rollback();
+      return res.status(400).json({ message: "Insufficient balance" });
     }
     // // Update Customer balance
     // const customerUpdate = await Customer.update(
