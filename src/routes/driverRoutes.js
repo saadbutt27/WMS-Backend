@@ -12,6 +12,10 @@ router.get(
   "/driver-delivery-requests/:id",
   driverController.getPendingBookingsForDriver
 );
+router.get(
+  "/delivery-report/:id",
+  driverController.getDriverDeliveryReport
+);
 router.put("/deliver-booking", driverController.deliverBooking);
 router.put("/update/:id", driverController.updateDriver);
 router.delete("/delete/:id", driverController.deleteDriver);

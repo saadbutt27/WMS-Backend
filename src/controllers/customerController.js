@@ -138,6 +138,7 @@ exports.getCustomerProfile = async (req, res) => {
         "balance",
         "password",
         "created_at",
+        "category",
       ],
 
       include: [

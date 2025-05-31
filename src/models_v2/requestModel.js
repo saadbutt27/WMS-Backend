@@ -16,7 +16,7 @@ const Request = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    requested_liters: {
+    requested_gallons: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

@@ -189,6 +189,68 @@ exports.getDriverById = async (req, res) => {
 //   }
 // };
 
+exports.getDriverDeliveryReport = async (req, res) => {
+  try {
+    const driver_id = req.params.id;
+    const { start_date, end_date } = req.query;
+
+    if (!start_date || !end_date) {
+      return res.status(400).json({
+        status: "error",
+        message: "start_date and end_date are required query parameters.",
+      });
+    }
+
+    const deliveries = await Bookings.findAll({
+      where: {
+        status: "Delivered",
+        scheduled_date: {
+          [Op.between]: [start_date, end_date],
+        },
+      },
+      include: [
+        {
+          model: Tanker,
+          attributes: ["tanker_id", "tanker_name"],
+          where: {
+            assigned_driver_id: driver_id,
+          },
+          include: [
+            {
+              model: Driver,
+              attributes: ["driver_id", "full_name"],
+            },
+          ],
+        },
+        {
+          model: Customer,
+          attributes: ["customer_id", "full_name", "street_address"],
+          include: [
+            {
+              model: Phase,
+              attributes: ["phase_name"],
+            },
+          ],
+        },
+      ],
+      attributes: ["booking_id", "scheduled_date", "status"],
+      
+      order: [["scheduled_date", "ASC"]],
+    });
+
+    res.status(200).json({
+      status: "success",
+      data: deliveries,
+    });
+  } catch (error) {
+    console.error("Error fetching delivery report:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Failed to fetch delivery report.",
+    });
+  }
+};
+
 exports.getPendingBookingsForDriver = async (req, res) => {
   try {
     const driver_id = req.params.id; // Get driver ID from request parameters

@@ -87,7 +87,7 @@ exports.allRequests = async (req, res) => {
       ],
       attributes: [
         "request_id",
-        "requested_liters",
+        "requested_gallons",
         "request_status",
         "request_date",
       ], // Exclude customer_id for cleaner response

@@ -32,7 +32,7 @@ const Tanker = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    price_per_liter: {
+    price_per_gallon: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },

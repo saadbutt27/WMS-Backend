@@ -14,7 +14,7 @@ exports.createTanker = async (req, res) => {
       tanker_name,
       plate_number,
       capacity,
-      price_per_liter,
+      price_per_gallon,
       cost,
       assigned_driver_id,
       phase_id,
@@ -58,7 +58,7 @@ exports.createTanker = async (req, res) => {
         plate_number,
         tanker_name,
         capacity,
-        price_per_liter,
+        price_per_gallon,
         cost,
         assigned_driver_id,
       },
@@ -270,7 +270,7 @@ exports.updateTanker = async (req, res) => {
     availability,
     tanker_name,
     capacity,
-    price_per_liter,
+    price_per_gallon,
     cost,
     assigned_driver_id,
   } = req.body;
@@ -282,7 +282,7 @@ exports.updateTanker = async (req, res) => {
         availability_status: availability,
         tanker_name,
         capacity,
-        price_per_liter,
+        price_per_gallon,
         cost,
         assigned_driver_id,
       },
@@ -332,7 +332,7 @@ exports.getAllRequests = async (req, res) => {
 };
 
 exports.requestTanker = async (req, res) => {
-  const { customer_id, requested_liters } = req.body;
+  const { customer_id, requested_gallons } = req.body;
 
   try {
     // Check if customer exists
@@ -349,7 +349,7 @@ exports.requestTanker = async (req, res) => {
       const newRequest = await Request.create(
         {
           customer_id,
-          requested_liters,
+          requested_gallons,
         },
         { transaction, returning: true }
       );

@@ -179,6 +179,7 @@ const getUsers = async (req, res) => {
         "username",
         "balance",
         "created_at",
+        "category",
       ],
       include: [
         {

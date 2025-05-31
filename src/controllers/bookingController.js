@@ -28,7 +28,7 @@ function generateNumericCode(length = 6) {
 // Create a new booking request
 exports.createBooking = async (req, res) => {
   // start transaction
-  const { request_id, admin_id, tanker_id, customer_id, scheduled_date } =
+  const { request_id, requested_gallons, admin_id, tanker_id, customer_id, scheduled_date } =
     req.body;
   const t = await sequelize.transaction();
   try {
@@ -51,7 +51,7 @@ exports.createBooking = async (req, res) => {
     }
 
     const driver_id = tankerData.dataValues.Driver.dataValues.driver_id;
-    const cost = tankerData.dataValues.cost;
+    const price_per_gallon = tankerData.dataValues.price_per_gallon;
 
     // get balance from customer table to check if the cost can be deducted from balance or not
     const customer = await Customer.findOne({
@@ -63,7 +63,7 @@ exports.createBooking = async (req, res) => {
       throw new Error("Customer not found");
     }
     const balance = customer.dataValues.balance;
-    if (balance < cost) {
+    if (balance < price_per_gallon * requested_gallons) {
       throw new Error("Insufficient balance");
     }
     // // Update Customer balance
@@ -239,7 +239,7 @@ exports.getBookingForCustomer = async (req, res) => {
           as: "Request",
           attributes: [
             "request_id",
-            "requested_liters",
+            "requested_gallons",
             "request_status",
             "request_date",
           ],
@@ -539,7 +539,7 @@ exports.previousBookings = async (req, res) => {
       },
       attributes: [
         "request_id",
-        "requested_liters",
+        "requested_gallons",
         "request_status",
         "request_date",
       ],
@@ -600,7 +600,7 @@ exports.requestStatus = async (req, res) => {
       where: { customer_id },
       attributes: [
         "request_id",
-        "requested_liters",
+        "requested_gallons",
         "request_status",
         "request_date",
       ],
