@@ -102,8 +102,8 @@ exports.getCustomerDetails = async (req, res) => {
     const response = {
       username: waterTank.Customer.full_name,
       tank_id: waterTank.tank_id,
-      water_level_percentage: waterLevelPercentage?.toFixed(2) || null,
-      water_level_liters: waterLevelInLiters,
+      water_level_percentage: latestStatus.water_level?.toFixed(2) || null,
+      // water_level_liters: waterLevelInLiters,
       last_order_date: lastRequest ? lastRequest.request_date : null,
       expected_to_last_until: expectedToLastUntil,
       // water_consumption_last_24_hours: consumptionDifference,
