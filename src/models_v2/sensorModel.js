@@ -15,6 +15,7 @@ const Sensor = sequelize.define(
     sensor_name: {
       type: DataTypes.STRING(100),
       allowNull: false,
+      unique: true,
     },
     sensor_details: {
       type: DataTypes.TEXT,
