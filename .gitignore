@@ -60,6 +60,3 @@ logs/
 # Miscellaneous
 *.bak
 *.backup
-
-# Specific files
-src/config/database.js
